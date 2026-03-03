@@ -41,10 +41,3 @@ A premium, highly responsive landing page for Mangalam Industries (HDPE Piping S
 Simply open the `index.html` file in any modern web browser.
 
 ---
-
-**Evaluation Criteria Met**:
-
-- Pixel-perfect mapping to Figma designs.
-- Throttled and smooth scroll interactions.
-- Optimized performance and mobile responsiveness.
-- Clean, documented code structure.
