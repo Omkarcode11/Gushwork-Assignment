@@ -611,11 +611,18 @@ header.header-scrolled {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 4rem;
   opacity: 0.6;
   filter: grayscale(1);
   transition: var(--transition);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.logos-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .logos-grid:hover {
@@ -1635,8 +1642,49 @@ main section:not(#specs) {
     text-align: center;
   }
   .footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 3rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+    padding: 3rem 1.5rem;
+  }
+
+  /* Portfolio Slider Refinement for 800px */
+  .portfolio-slider-wrapper {
+    position: relative;
+    padding: 0 1rem;
+  }
+
+  .portfolio-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex-wrap: nowrap;
+  }
+
+  .portfolio-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .portfolio-card {
+    min-width: 85%;
+    flex-shrink: 0;
+  }
+
+  .portfolio-nav.mobile-only {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
   }
 }
 
@@ -1874,28 +1922,26 @@ main section:not(#specs) {
 
   #trust-bar {
     padding: 2.5rem 1rem;
+    text-align: center;
   }
 
   .trust-label {
-    font-size: 0.7rem;
-    margin-bottom: 1.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    margin-bottom: 1.25rem;
+    opacity: 0.8;
   }
 
   .logos-grid {
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
-    gap: 2rem;
+    gap: 3rem;
     padding-bottom: 1rem;
-    scrollbar-width: none;
-  }
-
-  .logos-grid::-webkit-scrollbar {
-    display: none;
   }
 
   .logos-grid img {
-    height: 20px;
+    height: 25px;
     flex-shrink: 0;
   }
 

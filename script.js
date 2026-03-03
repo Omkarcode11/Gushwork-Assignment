@@ -325,6 +325,78 @@ document.addEventListener("DOMContentLoaded", () => {
     startTestimonialAutoSlide();
   }
 
+  // Portfolio Slider Logic
+  const portfolioSlider = document.getElementById("portfolio-slider");
+  const portPrevBtn = document.getElementById("portfolio-prev");
+  const portNextBtn = document.getElementById("portfolio-next");
+  let portfolioInterval;
+
+  if (portfolioSlider) {
+    const getScrollAmount = () => {
+      const card = portfolioSlider.querySelector(".portfolio-card");
+      if (!card) return 0;
+      const gap = parseInt(getComputedStyle(portfolioSlider).gap) || 0;
+      return card.offsetWidth + gap;
+    };
+
+    const slideNext = () => {
+      const maxScroll =
+        portfolioSlider.scrollWidth - portfolioSlider.clientWidth;
+      if (portfolioSlider.scrollLeft >= maxScroll - 5) {
+        portfolioSlider.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        portfolioSlider.scrollBy({
+          left: getScrollAmount(),
+          behavior: "smooth",
+        });
+      }
+    };
+
+    const slidePrev = () => {
+      if (portfolioSlider.scrollLeft <= 5) {
+        const maxScroll =
+          portfolioSlider.scrollWidth - portfolioSlider.clientWidth;
+        portfolioSlider.scrollTo({ left: maxScroll, behavior: "smooth" });
+      } else {
+        portfolioSlider.scrollBy({
+          left: -getScrollAmount(),
+          behavior: "smooth",
+        });
+      }
+    };
+
+    const startAutoSlide = () => {
+      portfolioInterval = setInterval(slideNext, 6000);
+    };
+
+    const stopAutoSlide = () => {
+      clearInterval(portfolioInterval);
+    };
+
+    if (portNextBtn) {
+      portNextBtn.addEventListener("click", () => {
+        stopAutoSlide();
+        slideNext();
+        startAutoSlide();
+      });
+    }
+
+    if (portPrevBtn) {
+      portPrevBtn.addEventListener("click", () => {
+        stopAutoSlide();
+        slidePrev();
+        startAutoSlide();
+      });
+    }
+
+    portfolioSlider.addEventListener("mouseenter", stopAutoSlide);
+    portfolioSlider.addEventListener("mouseleave", startAutoSlide);
+    portfolioSlider.addEventListener("touchstart", stopAutoSlide);
+    portfolioSlider.addEventListener("touchend", startAutoSlide);
+
+    startAutoSlide();
+  }
+
   // Generic Modal Logic
   const openModal = (modalId) => {
     const modal = document.getElementById(modalId);
