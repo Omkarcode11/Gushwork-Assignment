@@ -1656,37 +1656,15 @@ main section:not(#specs) {
     padding: 3rem 1.5rem;
   }
 
-  /* Portfolio Slider Refinement for 800px */
-  .portfolio-slider-wrapper {
-    position: relative;
-    padding: 0 1rem;
-  }
-
+  /* Portfolio Section Refinement for 800px */
   .portfolio-grid {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    gap: 1.5rem;
-    padding: 1rem 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    flex-wrap: nowrap;
-  }
-
-  .portfolio-grid::-webkit-scrollbar {
-    display: none;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 1.5rem;
   }
 
   .portfolio-card {
-    min-width: 85%;
-    flex-shrink: 0;
-  }
-
-  .portfolio-nav.mobile-only {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-top: 2rem;
+    min-width: 100%;
   }
 }
 
