@@ -1,26 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Theme Toggle Logic
-  const themeToggle = document.getElementById("theme-toggle");
-  const body = document.body;
-
-  // Check saved theme or system preference
-  const savedTheme =
-    localStorage.getItem("theme") ||
-    (window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light");
-  body.classList.remove("light-mode", "dark-mode");
-  body.classList.add(`${savedTheme}-mode`);
-
-  themeToggle.addEventListener("click", () => {
-    const currentTheme = body.classList.contains("light-mode")
-      ? "light"
-      : "dark";
-    const newTheme = currentTheme === "light" ? "dark" : "light";
-
-    body.classList.remove(`${currentTheme}-mode`);
-    body.classList.add(`${newTheme}-mode`);
-    localStorage.setItem("theme", newTheme);
+  const header = document.getElementById("main-header");
+  // Header Scroll & Sticky Logic
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 50) {
+      header.classList.add("header-scrolled");
+      header.style.padding = "0.5rem 0";
+      header.style.boxShadow = "0 10px 15px -3px var(--shadow)";
+    } else {
+      header.classList.remove("header-scrolled");
+      header.style.padding = "1.5rem 0";
+      header.style.boxShadow = "none";
+    }
   });
 
   // Gallery Logic
@@ -30,58 +20,74 @@ document.addEventListener("DOMContentLoaded", () => {
   const nextBtn = document.getElementById("next-btn");
   let currentIndex = 0;
 
-  const updateGallery = (index) => {
-    currentIndex = index;
-    const newSrc = thumbs[currentIndex].getAttribute("data-src");
+  if (mainImg && thumbs.length) {
+    const updateGallery = (index) => {
+      currentIndex = index;
+      const newSrc = thumbs[currentIndex].getAttribute("data-src");
 
-    // Add fade effect
-    mainImg.style.opacity = "0.3";
+      // Add fade effect
+      mainImg.style.opacity = "0.3";
 
-    // Create a temporary image to pre-load
-    const tempImg = new Image();
-    tempImg.onload = () => {
-      mainImg.src = newSrc;
-      mainImg.style.opacity = "1";
+      // Create a temporary image to pre-load
+      const tempImg = new Image();
+      tempImg.onload = () => {
+        mainImg.src = newSrc;
+        mainImg.style.opacity = "1";
+      };
+      tempImg.src = newSrc;
+
+      thumbs.forEach((t) => t.classList.remove("active"));
+      thumbs[currentIndex].classList.add("active");
     };
-    tempImg.src = newSrc;
 
-    thumbs.forEach((t) => t.classList.remove("active"));
-    thumbs[currentIndex].classList.add("active");
-  };
+    thumbs.forEach((thumb, idx) => {
+      thumb.addEventListener("click", () => updateGallery(idx));
+    });
 
-  thumbs.forEach((thumb, idx) => {
-    thumb.addEventListener("click", () => updateGallery(idx));
-  });
-
-  prevBtn.addEventListener("click", () => {
-    const newIndex = (currentIndex - 1 + thumbs.length) % thumbs.length;
-    updateGallery(newIndex);
-  });
-
-  nextBtn.addEventListener("click", () => {
-    const newIndex = (currentIndex + 1) % thumbs.length;
-    updateGallery(newIndex);
-  });
-
-  // Sticky Header Scroll Effect
-  const header = document.getElementById("main-header");
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 50) {
-      header.style.padding = "0.5rem 0";
-      header.style.boxShadow = "0 10px 15px -3px var(--shadow)";
-    } else {
-      header.style.padding = "1.5rem 0";
-      header.style.boxShadow = "none";
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        const newIndex = (currentIndex - 1 + thumbs.length) % thumbs.length;
+        updateGallery(newIndex);
+      });
     }
-  });
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        const newIndex = (currentIndex + 1) % thumbs.length;
+        updateGallery(newIndex);
+      });
+    }
+  }
 
   // Mobile Menu Toggle
   const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+  const navLinks = document.querySelector(".nav-links");
+
   mobileMenuBtn.addEventListener("click", () => {
-    // Simple alert or implementation if needed. For now just visual toggle for the icon
     mobileMenuBtn.classList.toggle("active");
-    // A real implementation would show a menu overlay
-    console.log("Mobile menu clicked");
+    navLinks.classList.toggle("active");
+  });
+
+  // Close menu when clicking links
+  navLinks.querySelectorAll("a").forEach((link) => {
+    if (!link.parentElement.classList.contains("dropdown")) {
+      link.addEventListener("click", () => {
+        mobileMenuBtn.classList.remove("active");
+        navLinks.classList.remove("active");
+      });
+    }
+  });
+
+  // Mobile Dropdown Toggle
+  const dropdowns = document.querySelectorAll(".dropdown");
+  dropdowns.forEach((dropdown) => {
+    const btn = dropdown.querySelector(".drop-btn");
+    btn.addEventListener("click", (e) => {
+      if (window.innerWidth <= 968) {
+        e.preventDefault();
+        dropdown.classList.toggle("active");
+      }
+    });
   });
 
   // Interactive Hover for feature cards
@@ -155,10 +161,16 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     activeInfo.classList.add("active");
 
-    // Update Image with a simple random placeholder based on index
+    // Update Image with real images
+    const processImages = [
+      "https://res.cloudinary.com/dulamnm2q/image/upload/v1772567644/j26shplmxjge6l97mzpf.png",
+      "https://res.cloudinary.com/dulamnm2q/image/upload/v1772568368/qitlsdupasfjohpae6fq.png",
+      "https://res.cloudinary.com/dulamnm2q/image/upload/v1772568368/vontjkxy150tsbb7rn7n.png",
+    ];
+
     processImg.style.opacity = "0.3";
     setTimeout(() => {
-      processImg.src = `https://picsum.photos/800/600?random=${40 + index}`;
+      processImg.src = processImages[index % processImages.length];
       processImg.style.opacity = "1";
     }, 200);
   };
@@ -268,33 +280,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
   startTestimonialAutoSlide();
 
-  // Modal Logic
-  const modal = document.getElementById("callback-modal");
-  const talkExpertBtn = document.getElementById("talk-expert-btn");
-  const closeModalBtn = document.getElementById("close-modal");
-
-  const openModal = () => {
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden"; // Prevent scrolling
+  // Generic Modal Logic
+  const openModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
   };
 
-  const closeModal = () => {
-    modal.classList.remove("active");
-    document.body.style.overflow = "auto";
+  const closeModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove("active");
+      document.body.style.overflow = "auto";
+    }
   };
 
-  talkExpertBtn.addEventListener("click", openModal);
-  closeModalBtn.addEventListener("click", closeModal);
+  // Setup triggers for Callback Modal
+  const callbackTriggers = [
+    "talk-expert-btn",
+    "quote-btn-hero",
+    "quote-btn-performance",
+    "close-modal",
+  ];
 
-  // Close on background click
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      closeModal();
+  callbackTriggers.forEach((id) => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      if (id === "close-modal") {
+        btn.addEventListener("click", () => closeModal("callback-modal"));
+      } else {
+        btn.addEventListener("click", () => openModal("callback-modal"));
+      }
     }
   });
 
-  // Also hook up any "Learn More" buttons in Portfolio if desired
+  // Setup triggers for Catalogue Modal
+  const catalogueTriggers = [
+    "request-catalogue-btn",
+    "download-datasheet-btn",
+    "close-catalogue-modal",
+  ];
+
+  catalogueTriggers.forEach((id) => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      if (id === "close-catalogue-modal") {
+        btn.addEventListener("click", () => closeModal("catalogue-modal"));
+      } else {
+        btn.addEventListener("click", () => openModal("catalogue-modal"));
+      }
+    }
+  });
+
+  // Close modals on background click
+  document.querySelectorAll(".modal").forEach((modal) => {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal(modal.id);
+      }
+    });
+  });
+
+  // Hook up Portfolio "Learn More" buttons to Callback Modal
   document.querySelectorAll(".btn-card").forEach((btn) => {
-    btn.addEventListener("click", openModal);
+    btn.addEventListener("click", () => openModal("callback-modal"));
   });
 });
