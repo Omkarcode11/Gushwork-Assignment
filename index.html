@@ -40,6 +40,8 @@
             src="https://res.cloudinary.com/dulamnm2q/image/upload/v1772568160/w9bcueitjlppqqjpv26a.png"
             alt="Mangalam Logo"
             class="logo-img"
+            width="180"
+            height="50"
           />
         </div>
         <ul class="nav-links">
@@ -65,6 +67,13 @@
           </li>
           <li><a href="#contact" class="btn btn-primary">Contact Us</a></li>
         </ul>
+        <div class="nav-actions">
+          <button class="mobile-menu-btn" aria-label="Open Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </nav>
     </header>
 
@@ -82,6 +91,9 @@
               src="https://res.cloudinary.com/dulamnm2q/image/upload/v1772567644/j26shplmxjge6l97mzpf.png"
               alt="HDPE Pipe Production"
               class="main-img"
+              width="600"
+              height="400"
+              fetchpriority="high"
             />
             <button class="gallery-nav prev" id="prev-btn">&#x276E;</button>
             <button class="gallery-nav next" id="next-btn">&#x276F;</button>
@@ -416,7 +428,7 @@
         <div class="section-header">
           <h2>Built to Last. Engineered to Perform.</h2>
           <p>
-            From bulk bags to technical threads, Meera delivers precision
+            From bulk bags to technical threads, Mangalam delivers precision
             solutions for every stage of your packaging process.
           </p>
         </div>
@@ -1316,7 +1328,7 @@
                 </div>
                 <h3>Revolutionized our FIBC production efficiency!</h3>
                 <p>
-                  Meera Industries' TFO machines have revolutionized our FIBC
+                  Mangalam Industries' TFO machines have revolutionized our FIBC
                   production efficiency. The precision engineering delivers the
                   consistent yarn strength critical for our bulk container
                   applications.
@@ -1345,7 +1357,7 @@
                 </div>
                 <h3>Excellent support for specialized applications.</h3>
                 <p>
-                  The durability and performance of Meera's fishnet processing
+                  The durability and performance of Mangalam's fishnet processing
                   equipment has significantly improved our marine product
                   quality. Excellent support for specialized applications.
                 </p>
@@ -1373,7 +1385,7 @@
                 </div>
                 <h3>Provides the exact specifications we need!</h3>
                 <p>
-                  For our technical textile applications, Meera's specialized
+                  For our technical textile applications, Mangalam's specialized
                   machinery provides the exact specifications we need. Their
                   understanding of automotive textile requirements is
                   exceptional.
@@ -1601,7 +1613,7 @@
             <span class="resource-name"
               >Engineering Specifications Sheet (PDF)</span
             >
-            <a href="#" class="btn-download">
+            <a href="#" id="request-catalogue-btn" class="btn-download">
               Download PDF
               <svg
                 width="20"
@@ -1821,6 +1833,51 @@
         </div>
       </div>
     </footer>
+
+    <!-- Callback Modal -->
+    <div id="callback-modal" class="modal">
+      <div class="modal-content animate-up">
+        <button id="close-modal" class="close-btn">&times;</button>
+        <h2>Request a Call Back</h2>
+        <p>Fill in your details and our experts will reach out to you shortly.</p>
+        <form class="modal-form">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="+91 XXX XXX XXXX" required />
+          </div>
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea id="message" name="message" rows="3" placeholder="Tell us about your requirement..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary full-width">Send Request</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Catalogue Modal -->
+    <div id="catalogue-modal" class="modal">
+      <div class="modal-content animate-up">
+        <button id="close-catalogue-modal" class="close-btn">&times;</button>
+        <h2>Download Catalogue</h2>
+        <p>Get instant access to our complete technical datasheets and product range.</p>
+        <form class="modal-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="john@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="company">Company Name</label>
+            <input type="text" id="company" name="company" placeholder="Acme Corp" required />
+          </div>
+          <button type="submit" class="btn btn-primary full-width">Download Now</button>
+        </form>
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>

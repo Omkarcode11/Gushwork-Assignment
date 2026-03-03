@@ -1,17 +1,36 @@
+const throttle = (func, limit) => {
+  let inThrottle;
+  return function () {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   const header = document.getElementById("main-header");
-  // Header Scroll & Sticky Logic
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 50) {
-      header.classList.add("header-scrolled");
-      header.style.padding = "0.5rem 0";
-      header.style.boxShadow = "0 10px 15px -3px var(--shadow)";
-    } else {
-      header.classList.remove("header-scrolled");
-      header.style.padding = "1.5rem 0";
-      header.style.boxShadow = "none";
-    }
-  });
+
+  // Header Scroll & Sticky Logic with throttling
+  if (header) {
+    window.addEventListener(
+      "scroll",
+      throttle(() => {
+        if (window.scrollY > 50) {
+          header.classList.add("header-scrolled");
+          header.style.padding = "0.5rem 0";
+          header.style.boxShadow = "0 10px 15px -3px var(--shadow)";
+        } else {
+          header.classList.remove("header-scrolled");
+          header.style.padding = "1.5rem 0";
+          header.style.boxShadow = "none";
+        }
+      }, 100),
+    );
+  }
 
   // Gallery Logic
   const mainImg = document.getElementById("pd-main-img");
@@ -25,10 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
       currentIndex = index;
       const newSrc = thumbs[currentIndex].getAttribute("data-src");
 
-      // Add fade effect
       mainImg.style.opacity = "0.3";
 
-      // Create a temporary image to pre-load
       const tempImg = new Image();
       tempImg.onload = () => {
         mainImg.src = newSrc;
@@ -63,32 +80,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
   const navLinks = document.querySelector(".nav-links");
 
-  mobileMenuBtn.addEventListener("click", () => {
-    mobileMenuBtn.classList.toggle("active");
-    navLinks.classList.toggle("active");
-  });
+  if (mobileMenuBtn && navLinks) {
+    mobileMenuBtn.addEventListener("click", () => {
+      mobileMenuBtn.classList.toggle("active");
+      navLinks.classList.toggle("active");
+    });
 
-  // Close menu when clicking links
-  navLinks.querySelectorAll("a").forEach((link) => {
-    if (!link.parentElement.classList.contains("dropdown")) {
-      link.addEventListener("click", () => {
-        mobileMenuBtn.classList.remove("active");
-        navLinks.classList.remove("active");
-      });
-    }
-  });
-
-  // Mobile Dropdown Toggle
-  const dropdowns = document.querySelectorAll(".dropdown");
-  dropdowns.forEach((dropdown) => {
-    const btn = dropdown.querySelector(".drop-btn");
-    btn.addEventListener("click", (e) => {
-      if (window.innerWidth <= 968) {
-        e.preventDefault();
-        dropdown.classList.toggle("active");
+    // Close menu when clicking links
+    navLinks.querySelectorAll("a").forEach((link) => {
+      if (!link.parentElement.classList.contains("dropdown")) {
+        link.addEventListener("click", () => {
+          mobileMenuBtn.classList.remove("active");
+          navLinks.classList.remove("active");
+        });
       }
     });
-  });
+
+    // Mobile Dropdown Toggle
+    const dropdowns = document.querySelectorAll(".dropdown");
+    dropdowns.forEach((dropdown) => {
+      const btn = dropdown.querySelector(".drop-btn");
+      if (btn) {
+        btn.addEventListener("click", (e) => {
+          if (window.innerWidth <= 968) {
+            e.preventDefault();
+            dropdown.classList.toggle("active");
+          }
+        });
+      }
+    });
+  }
 
   // Interactive Hover for feature cards
   const featureCards = document.querySelectorAll(".feature-card");
@@ -124,17 +145,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const faqItems = document.querySelectorAll(".faq-item");
   faqItems.forEach((item) => {
     const question = item.querySelector(".faq-question");
-    question.addEventListener("click", () => {
-      const isActive = item.classList.contains("active");
-
-      // Close all other items
-      faqItems.forEach((i) => i.classList.remove("active"));
-
-      // Open clicked item if it wasn't active
-      if (!isActive) {
-        item.classList.add("active");
-      }
-    });
+    if (question) {
+      question.addEventListener("click", () => {
+        const isActive = item.classList.contains("active");
+        faqItems.forEach((i) => i.classList.remove("active"));
+        if (!isActive) {
+          item.classList.add("active");
+        }
+      });
+    }
   });
 
   // Manufacturing Process Tabs Logic
@@ -155,27 +174,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const processId = activeTab.getAttribute("data-process");
     const stepName = activeTab.innerText.trim();
 
-    // Update Tabs
     processTabs.forEach((btn) => btn.classList.remove("active"));
     activeTab.classList.add("active");
 
-    // Update Content
     processInfos.forEach((info) => info.classList.remove("active"));
     const activeInfo = document.querySelector(
       `.process-info[data-process="${processId}"]`,
     );
     if (activeInfo) activeInfo.classList.add("active");
 
-    // Update Badge
     if (pStepBadge) {
       pStepBadge.innerText = `Step ${currentStepIndex + 1}/${processTabs.length}: ${stepName}`;
-      // Move badge to active info if it's not already there
       if (activeInfo && !activeInfo.contains(pStepBadge)) {
         activeInfo.prepend(pStepBadge);
       }
     }
 
-    // Update Image with real images
     const processImages = [
       "https://res.cloudinary.com/dulamnm2q/image/upload/v1772567644/j26shplmxjge6l97mzpf.png",
       "https://res.cloudinary.com/dulamnm2q/image/upload/v1772568368/qitlsdupasfjohpae6fq.png",
@@ -217,89 +231,99 @@ document.addEventListener("DOMContentLoaded", () => {
   const appNextBtn = document.getElementById("app-next");
   let autoSlideInterval;
 
-  const getScrollAmount = () => {
-    const card = appSlider.querySelector(".app-card");
-    const gap = parseInt(getComputedStyle(appSlider).gap) || 0;
-    return card.offsetWidth + gap;
-  };
+  if (appSlider) {
+    const getScrollAmount = () => {
+      const card = appSlider.querySelector(".app-card");
+      if (!card) return 0;
+      const gap = parseInt(getComputedStyle(appSlider).gap) || 0;
+      return card.offsetWidth + gap;
+    };
 
-  const slideNext = () => {
-    const maxScroll = appSlider.scrollWidth - appSlider.clientWidth;
-    if (appSlider.scrollLeft >= maxScroll - 5) {
-      appSlider.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      appSlider.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
-    }
-  };
-
-  const slidePrev = () => {
-    if (appSlider.scrollLeft <= 5) {
+    const slideNext = () => {
       const maxScroll = appSlider.scrollWidth - appSlider.clientWidth;
-      appSlider.scrollTo({ left: maxScroll, behavior: "smooth" });
-    } else {
-      appSlider.scrollBy({ left: -getScrollAmount(), behavior: "smooth" });
+      if (appSlider.scrollLeft >= maxScroll - 5) {
+        appSlider.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        appSlider.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
+      }
+    };
+
+    const slidePrev = () => {
+      if (appSlider.scrollLeft <= 5) {
+        const maxScroll = appSlider.scrollWidth - appSlider.clientWidth;
+        appSlider.scrollTo({ left: maxScroll, behavior: "smooth" });
+      } else {
+        appSlider.scrollBy({ left: -getScrollAmount(), behavior: "smooth" });
+      }
+    };
+
+    const startAutoSlide = () => {
+      autoSlideInterval = setInterval(slideNext, 4000);
+    };
+
+    const stopAutoSlide = () => {
+      clearInterval(autoSlideInterval);
+    };
+
+    if (appNextBtn) {
+      appNextBtn.addEventListener("click", () => {
+        stopAutoSlide();
+        slideNext();
+        startAutoSlide();
+      });
     }
-  };
 
-  const startAutoSlide = () => {
-    autoSlideInterval = setInterval(slideNext, 4000);
-  };
+    if (appPrevBtn) {
+      appPrevBtn.addEventListener("click", () => {
+        stopAutoSlide();
+        slidePrev();
+        startAutoSlide();
+      });
+    }
 
-  const stopAutoSlide = () => {
-    clearInterval(autoSlideInterval);
-  };
+    appSlider.addEventListener("mouseenter", stopAutoSlide);
+    appSlider.addEventListener("mouseleave", startAutoSlide);
+    appSlider.addEventListener("touchstart", stopAutoSlide);
+    appSlider.addEventListener("touchend", startAutoSlide);
 
-  appNextBtn.addEventListener("click", () => {
-    stopAutoSlide();
-    slideNext();
     startAutoSlide();
-  });
-
-  appPrevBtn.addEventListener("click", () => {
-    stopAutoSlide();
-    slidePrev();
-    startAutoSlide();
-  });
-
-  appSlider.addEventListener("mouseenter", stopAutoSlide);
-  appSlider.addEventListener("mouseleave", startAutoSlide);
-  appSlider.addEventListener("touchstart", stopAutoSlide);
-  appSlider.addEventListener("touchend", startAutoSlide);
-
-  startAutoSlide();
+  }
 
   // Testimonials Slider Logic
   const testimonialSlider = document.getElementById("testimonial-slider");
   let testimonialInterval;
 
-  const slideNextTestimonial = () => {
-    const card = testimonialSlider.querySelector(".testimonial-card");
-    const gap = parseInt(getComputedStyle(testimonialSlider).gap) || 0;
-    const scrollAmount = card.offsetWidth + gap;
-    const maxScroll =
-      testimonialSlider.scrollWidth - testimonialSlider.clientWidth;
+  if (testimonialSlider) {
+    const slideNextTestimonial = () => {
+      const card = testimonialSlider.querySelector(".testimonial-card");
+      if (!card) return;
+      const gap = parseInt(getComputedStyle(testimonialSlider).gap) || 0;
+      const scrollAmount = card.offsetWidth + gap;
+      const maxScroll =
+        testimonialSlider.scrollWidth - testimonialSlider.clientWidth;
 
-    if (testimonialSlider.scrollLeft >= maxScroll - 5) {
-      testimonialSlider.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      testimonialSlider.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
+      if (testimonialSlider.scrollLeft >= maxScroll - 5) {
+        testimonialSlider.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        testimonialSlider.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    };
 
-  const startTestimonialAutoSlide = () => {
-    testimonialInterval = setInterval(slideNextTestimonial, 5000);
-  };
+    const startTestimonialAutoSlide = () => {
+      testimonialInterval = setInterval(slideNextTestimonial, 5000);
+    };
 
-  const stopTestimonialAutoSlide = () => {
-    clearInterval(testimonialInterval);
-  };
+    const stopTestimonialAutoSlide = () => {
+      clearInterval(testimonialInterval);
+    };
 
-  testimonialSlider.addEventListener("mouseenter", stopTestimonialAutoSlide);
-  testimonialSlider.addEventListener("mouseleave", startTestimonialAutoSlide);
-  testimonialSlider.addEventListener("touchstart", stopTestimonialAutoSlide);
-  testimonialSlider.addEventListener("touchend", startTestimonialAutoSlide);
+    testimonialSlider.addEventListener("mouseenter", stopTestimonialAutoSlide);
+    testimonialSlider.addEventListener("mouseleave", startTestimonialAutoSlide);
+    testimonialSlider.addEventListener("touchstart", stopTestimonialAutoSlide);
+    testimonialSlider.addEventListener("touchend", startTestimonialAutoSlide);
 
-  startTestimonialAutoSlide();
+    startTestimonialAutoSlide();
+  }
 
   // Generic Modal Logic
   const openModal = (modalId) => {
@@ -364,8 +388,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // Escape key listener for modals
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".modal.active").forEach((modal) => {
+        closeModal(modal.id);
+      });
+    }
+  });
+
   // Hook up Portfolio "Learn More" buttons to Callback Modal
   document.querySelectorAll(".btn-card").forEach((btn) => {
     btn.addEventListener("click", () => openModal("callback-modal"));
+  });
+
+  // Form submission prevention (UI only)
+  document.querySelectorAll("form").forEach((form) => {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Thank you! Your request has been received.");
+      const modal = form.closest(".modal");
+      if (modal) closeModal(modal.id);
+    });
   });
 });
