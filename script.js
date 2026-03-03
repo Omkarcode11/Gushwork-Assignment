@@ -143,12 +143,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const processImg = document.getElementById("process-display-img");
   const pPrevBtn = document.getElementById("p-nav-prev");
   const pNextBtn = document.getElementById("p-nav-next");
+  const pStepBadge = document.getElementById("process-step-badge");
+  const mPrevBtn = document.getElementById("m-nav-prev");
+  const mNextBtn = document.getElementById("m-nav-next");
   let currentStepIndex = 0;
 
   const updateProcessStep = (index) => {
     currentStepIndex = index;
     const activeTab = processTabs[currentStepIndex];
+    if (!activeTab) return;
     const processId = activeTab.getAttribute("data-process");
+    const stepName = activeTab.innerText.trim();
 
     // Update Tabs
     processTabs.forEach((btn) => btn.classList.remove("active"));
@@ -159,7 +164,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const activeInfo = document.querySelector(
       `.process-info[data-process="${processId}"]`,
     );
-    activeInfo.classList.add("active");
+    if (activeInfo) activeInfo.classList.add("active");
+
+    // Update Badge
+    if (pStepBadge) {
+      pStepBadge.innerText = `Step ${currentStepIndex + 1}/${processTabs.length}: ${stepName}`;
+      // Move badge to active info if it's not already there
+      if (activeInfo && !activeInfo.contains(pStepBadge)) {
+        activeInfo.prepend(pStepBadge);
+      }
+    }
 
     // Update Image with real images
     const processImages = [
@@ -168,27 +182,34 @@ document.addEventListener("DOMContentLoaded", () => {
       "https://res.cloudinary.com/dulamnm2q/image/upload/v1772568368/vontjkxy150tsbb7rn7n.png",
     ];
 
-    processImg.style.opacity = "0.3";
-    setTimeout(() => {
-      processImg.src = processImages[index % processImages.length];
-      processImg.style.opacity = "1";
-    }, 200);
+    if (processImg) {
+      processImg.style.opacity = "0.3";
+      setTimeout(() => {
+        processImg.src = processImages[index % processImages.length];
+        processImg.style.opacity = "1";
+      }, 200);
+    }
   };
 
   processTabs.forEach((tab, index) => {
     tab.addEventListener("click", () => updateProcessStep(index));
   });
 
-  pPrevBtn.addEventListener("click", () => {
+  const handlePrev = () => {
     const newIndex =
       (currentStepIndex - 1 + processTabs.length) % processTabs.length;
     updateProcessStep(newIndex);
-  });
+  };
 
-  pNextBtn.addEventListener("click", () => {
+  const handleNext = () => {
     const newIndex = (currentStepIndex + 1) % processTabs.length;
     updateProcessStep(newIndex);
-  });
+  };
+
+  if (pPrevBtn) pPrevBtn.addEventListener("click", handlePrev);
+  if (pNextBtn) pNextBtn.addEventListener("click", handleNext);
+  if (mPrevBtn) mPrevBtn.addEventListener("click", handlePrev);
+  if (mNextBtn) mNextBtn.addEventListener("click", handleNext);
 
   // Applications Slider Logic
   const appSlider = document.getElementById("app-slider");
