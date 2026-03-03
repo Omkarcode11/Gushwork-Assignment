@@ -19,16 +19,19 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener(
       "scroll",
       throttle(() => {
-        if (window.scrollY > 50) {
+        const threshold = window.innerHeight * 0.8;
+        if (window.scrollY > threshold) {
           header.classList.add("header-scrolled");
-          header.style.padding = "0.4rem 0";
-          header.style.boxShadow = "0 10px 15px -3px var(--shadow)";
-        } else {
+        } else if (window.scrollY > 100) {
+          // Hide it while scrolling the first fold
           header.classList.remove("header-scrolled");
-          header.style.padding = "0.75rem 0";
-          header.style.boxShadow = "none";
+          header.classList.add("sticky-hidden");
+        } else {
+          // Visible naturally at the very top
+          header.classList.remove("header-scrolled");
+          header.classList.remove("sticky-hidden");
         }
-      }, 100),
+      }, 50),
     );
   }
 
@@ -72,6 +75,23 @@ document.addEventListener("DOMContentLoaded", () => {
       nextBtn.addEventListener("click", () => {
         const newIndex = (currentIndex + 1) % thumbs.length;
         updateGallery(newIndex);
+      });
+    }
+
+    // Zoom on Hover Functionality
+    const wrapper = mainImg.parentElement;
+    if (wrapper) {
+      wrapper.addEventListener("mousemove", (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        mainImg.style.transformOrigin = `${x}% ${y}%`;
+        mainImg.style.transform = "scale(2)";
+      });
+
+      wrapper.addEventListener("mouseleave", () => {
+        mainImg.style.transform = "scale(1)";
+        mainImg.style.transformOrigin = "center center";
       });
     }
   }
