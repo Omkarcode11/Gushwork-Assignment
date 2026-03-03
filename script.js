@@ -21,11 +21,11 @@ document.addEventListener("DOMContentLoaded", () => {
       throttle(() => {
         if (window.scrollY > 50) {
           header.classList.add("header-scrolled");
-          header.style.padding = "0.5rem 0";
+          header.style.padding = "0.4rem 0";
           header.style.boxShadow = "0 10px 15px -3px var(--shadow)";
         } else {
           header.classList.remove("header-scrolled");
-          header.style.padding = "1.5rem 0";
+          header.style.padding = "0.75rem 0";
           header.style.boxShadow = "none";
         }
       }, 100),
